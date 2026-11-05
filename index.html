@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Robô Programável</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <h1>Robô <span>Programável</span></h1>
+  <p class="sub">Monte o programa com blocos e leve o robô até a bandeira.</p>
+
+  <!-- Início -->
+  <section id="inicio" class="card estreito">
+    <label for="nome">Seu nome</label>
+    <input id="nome" type="text" maxlength="20" placeholder="Ex.: Paulo" autocomplete="off">
+    <p class="hint" id="nomeHint">Digite pelo menos 3 caracteres.</p>
+    <div class="row">
+      <button class="btn" id="jogar" disabled>Jogar</button>
+      <button class="btn ghost" id="verRanking">Ver ranking</button>
+    </div>
+    <ul class="regras">
+      <li>Toque nos blocos (ou arraste) para montar o programa e aperte <b>▶ Executar</b>.</li>
+      <li>O <b>🔁 Repetir</b> executa os blocos de dentro várias vezes. Toque no número para mudar.</li>
+      <li>Quanto menos blocos você usar, mais estrelas ganha: ⭐⭐⭐ = 300 pontos.</li>
+      <li>São 9 fases. Bateu na parede? Sem problema, é só ajustar e tentar de novo.</li>
+    </ul>
+  </section>
+
+  <!-- Jogo -->
+  <section id="jogo" class="hidden">
+    <div class="topo card">
+      <div><span class="stat">Fase</span> <b id="faseNum">1</b><span class="stat">/9</span> · <b id="faseNome"></b></div>
+      <div class="stat">Pontos <b id="pontos">0</b></div>
+    </div>
+    <p class="dica" id="dica"></p>
+
+    <div class="area">
+      <div class="card">
+        <div class="tabuleiro" id="tabuleiro">
+          <div class="robo" id="robo"><span class="olho">🤖</span><i class="seta"></i></div>
+        </div>
+        <div class="msg" id="msg" aria-live="polite"></div>
+      </div>
+
+      <div class="card editor">
+        <div class="paleta" id="paleta">
+          <button class="bloco-paleta andar"    data-tipo="andar"    draggable="true">⬆️ Andar</button>
+          <button class="bloco-paleta esquerda" data-tipo="esquerda" draggable="true">↩️ Virar à esquerda</button>
+          <button class="bloco-paleta direita"  data-tipo="direita"  draggable="true">↪️ Virar à direita</button>
+          <button class="bloco-paleta repetir"  data-tipo="repetir"  draggable="true">🔁 Repetir</button>
+        </div>
+        <div class="info-blocos">
+          <span>Blocos: <b id="contador">0</b><span id="limite"></span></span>
+          <span class="stat">⭐⭐⭐ com até <b id="par"></b></span>
+        </div>
+        <ul class="programa lista" id="programa" data-pai=""></ul>
+        <p class="hint" id="alvoHint"></p>
+        <div class="row">
+          <button class="btn" id="executar">▶ Executar</button>
+          <button class="btn ghost" id="limpar">Limpar</button>
+          <button class="btn ghost" id="verCodigo">&lt;/&gt; Ver código</button>
+        </div>
+        <pre class="codigo hidden" id="codigo"></pre>
+        <div class="row rodape">
+          <button class="link" id="pular">Pular fase</button>
+          <button class="link" id="encerrar">Encerrar jogo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fim -->
+  <section id="fim" class="card estreito center hidden">
+    <h2 id="fimTitulo">Fim de jogo</h2>
+    <div class="big" id="final">0</div>
+    <p class="stat" id="fimInfo"></p>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="denovo">Jogar de novo</button>
+      <button class="btn ghost" id="fimRanking">Ver ranking</button>
+    </div>
+  </section>
+
+  <!-- Ranking -->
+  <section id="ranking" class="card estreito hidden">
+    <h2 style="margin-top:0">🏆 Ranking</h2>
+    <div id="rankingCorpo"></div>
+    <div class="row">
+      <button class="btn" id="rankingVoltar">Voltar</button>
+      <button class="btn ghost" id="rankingLimpar">Limpar ranking</button>
+    </div>
+  </section>
+</div>
+
+<!-- Fase concluída -->
+<div class="modal hidden" id="modal">
+  <div class="card center">
+    <h2>Fase concluída! 🎉</h2>
+    <div class="estrelas" id="estrelas"></div>
+    <p id="modalInfo"></p>
+    <button class="btn" id="proxima">Próxima fase</button>
+  </div>
+</div>
+
+<script src="js/fases.js"></script>
+<script src="js/jogo.js"></script>
+</body>
+</html>
