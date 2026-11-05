@@ -25,14 +25,14 @@
       <li>O <b>🔁 Repetir</b> executa os blocos de dentro várias vezes. Toque no número para mudar.</li>
       <li>Quanto menos blocos você usar, mais estrelas ganha: ⭐⭐⭐ = 300 pontos.</li>
       <li>Você tem <b>4 vidas</b> ❤️❤️❤️❤️. Cada vez que o robô bate na parede ou o programa termina longe da bandeira, perde uma. Sem vidas, é game over.</li>
-      <li>São 9 fases. Parar a execução no botão ■ não custa vida.</li>
+      <li>São 9 fases sorteadas a cada partida: 3 fáceis, 3 médias e 3 difíceis. Parar a execução no botão ■ não custa vida.</li>
     </ul>
   </section>
 
   <!-- Jogo -->
   <section id="jogo" class="hidden">
     <div class="topo card">
-      <div><span class="stat">Fase</span> <b id="faseNum">1</b><span class="stat">/9</span> · <b id="faseNome"></b></div>
+      <div><span class="stat">Fase</span> <b id="faseNum">1</b><span class="stat">/<span id="faseTotal">9</span></span> · <b id="faseNome"></b> <span class="faixa" id="faixa"></span></div>
       <div class="vidas" id="vidas" aria-label="vidas"></div>
       <div class="stat">Pontos <b id="pontos">0</b></div>
     </div>

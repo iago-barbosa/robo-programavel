@@ -11,7 +11,7 @@ Abra o `index.html` no navegador. Digite um nome com pelo menos 3 caracteres e c
 - Estrelas por fase: ⭐⭐⭐ (300 pts) usando até a meta de blocos, ⭐⭐ (200) até 2 a mais, ⭐ (100) acima disso.
 - **</> Ver código** mostra o programa equivalente em JavaScript.
 - O jogador tem **4 vidas** para o jogo todo. Bater na parede ou terminar o programa longe da bandeira custa uma vida. Com 4 erros, é game over e a pontuação vai para o ranking.
-- São 9 fases. O ranking com os 10 melhores fica salvo no navegador (localStorage).
+- São 9 fases por partida, sorteadas de um banco de 30: 3 fáceis (fases 1 a 3), 3 médias (4 a 6) e 3 difíceis (7 a 9). Cada partida é diferente. O ranking com os 10 melhores fica salvo no navegador (localStorage).
 
 ## Estrutura
 ```
@@ -20,12 +20,12 @@ robo programavel/
 ├── css/
 │   └── style.css   # visual
 └── js/
-    ├── fases.js    # mapas das fases
+    ├── fases.js    # banco de 30 fases (10 por faixa)
     └── jogo.js     # editor de blocos, execução, pontuação, ranking
 ```
 
 ## Como criar uma fase
-Edite `js/fases.js` e acrescente um objeto na lista:
+Edite `js/fases.js` e acrescente um objeto na faixa desejada (`facil`, `medio` ou `dificil`):
 
 ```js
 {
@@ -38,4 +38,4 @@ Edite `js/fases.js` e acrescente um objeto na lista:
   ]
 }
 ```
-`#` parede, `.` chão, `R` robô, `F` bandeira. `par` é o número de blocos da melhor solução e `maxBlocos` limita quantos blocos podem ser usados (`null` = sem limite).
+`#` parede, `.` chão, `R` robô, `F` bandeira. O caminho deve ser único, sem atalhos. `par` é o número de blocos da melhor solução e `maxBlocos` limita quantos blocos podem ser usados (`null` = sem limite).

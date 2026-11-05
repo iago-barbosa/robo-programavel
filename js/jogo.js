@@ -56,17 +56,27 @@ function novoJogo(){
   if (!nomeOk()){ validarNome(); $("nome").focus(); return; }
   const nome = $("nome").value.trim();
   try { localStorage.setItem(RANK_KEY + "-nome", nome); } catch {}
-  J = { nome, vidas:MAX_VIDAS, fase:0, pontos:0, estrelas:0, concluidas:0, programa:[], alvo:null, rodando:false };
+  J = { nome, lista: sortearFases(), vidas:MAX_VIDAS, fase:0, pontos:0, estrelas:0, concluidas:0, programa:[], alvo:null, rodando:false };
   mostrar("jogo");
   carregarFase();
 }
 
-function faseAtual(){ return FASES[J.fase]; }
+function faseAtual(){ return J.lista[J.fase]; }
+
+// Sorteia FASES_POR_FAIXA fases de cada faixa, sem repetir, mantendo a ordem fácil → médio → difícil.
+const FAIXAS = [["facil","Fácil"],["medio","Médio"],["dificil","Difícil"]];
+function sortearFases(){
+  const embaralhar = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  return FAIXAS.flatMap(([chave, rotulo]) =>
+    embaralhar(FASES[chave]).slice(0, FASES_POR_FAIXA).map(f => ({ ...f, faixa: chave, rotulo })));
+}
 
 function carregarFase(){
   const f = faseAtual();
   J.programa = []; J.alvo = null; J.rodando = false;
   $("faseNum").textContent = J.fase + 1;
+  $("faseTotal").textContent = J.lista.length;
+  $("faixa").textContent = faseAtual().rotulo; $("faixa").className = "faixa " + faseAtual().faixa;
   $("faseNome").textContent = f.nome;
   $("dica").textContent = "💡 " + f.dica;
   $("par").textContent = f.par + " blocos";
@@ -273,11 +283,21 @@ function travar(sim){
   $("paleta").querySelectorAll("button").forEach(b => b.disabled = sim);
 }
 
+// No celular o labirinto fica acima do editor: rola a tela até ele antes de executar.
+async function focarLabirinto(){
+  const alvo = $("tabuleiro").closest(".card"), r = alvo.getBoundingClientRect();
+  if (r.top >= 0 && r.bottom <= window.innerHeight) return; // já está todo visível
+  const topo = window.scrollY + r.top - 8;
+  window.scrollTo({ top: Math.max(0, topo), behavior: "smooth" });
+  await espera(450);
+}
+
 async function executar(){
   if (J.rodando){ J.parar = true; return; }
   const passos = achatar(J.programa);
   if (!passos.length){ mensagem("Adicione blocos ao programa primeiro.", "bad"); return; }
   travar(true); J.parar = false;
+  await focarLabirinto();
   robo = inicioRobo(); limparRastro(); posicionarRobo(false); $("robo").className = "robo";
   mensagem("Executando...");
   await espera(250);
@@ -319,13 +339,13 @@ function faseConcluida(){
   $("estrelas").innerHTML = [1,2,3].map(i => `<span class="${i<=est?'':'apagada'}">⭐</span>`).join("");
   $("modalInfo").textContent = `Você usou ${usados} blocos (meta: ${par}). +${pts} pontos` +
     (est < 3 ? ". Dá para fazer com menos!" : ". Solução perfeita!");
-  $("proxima").textContent = J.fase + 1 < FASES.length ? "Próxima fase" : "Ver resultado";
+  $("proxima").textContent = J.fase + 1 < J.lista.length ? "Próxima fase" : "Ver resultado";
   $("modal").classList.remove("hidden");
 }
 function proximaFase(){
   $("modal").classList.add("hidden");
   J.fase++;
-  if (J.fase >= FASES.length) return encerrar(true);
+  if (J.fase >= J.lista.length) return encerrar(true);
   carregarFase();
 }
 
@@ -335,7 +355,7 @@ function encerrar(completou){
   J.ultima = e.data;
   $("fimTitulo").textContent = completou === "gameover" ? "💀 Game over" : completou ? "🏆 Você completou todas as fases!" : "Fim de jogo";
   $("final").textContent = J.pontos + " pts";
-  $("fimInfo").textContent = `${J.nome}, você concluiu ${J.concluidas} de ${FASES.length} fases e ganhou ${J.estrelas} ⭐. ` +
+  $("fimInfo").textContent = `${J.nome}, você concluiu ${J.concluidas} de ${J.lista.length} fases e ganhou ${J.estrelas} ⭐. ` +
     (pos < 0 ? "Não foi dessa vez que entrou no ranking." : `Você ficou em ${pos + 1}º lugar no ranking!`);
   mostrar("fim");
 }
@@ -349,7 +369,7 @@ $("programa").onclick = () => { if (J.alvo){ J.alvo = null; desenharPrograma(); 
 $("executar").onclick = executar;
 $("limpar").onclick = () => { J.programa = []; J.alvo = null; desenharPrograma(); mensagem(""); };
 $("verCodigo").onclick = () => $("codigo").classList.toggle("hidden");
-$("pular").onclick = () => { if (confirm("Pular esta fase? Você não ganha pontos por ela.")){ J.fase++; J.fase >= FASES.length ? encerrar(false) : carregarFase(); } };
+$("pular").onclick = () => { if (confirm("Pular esta fase? Você não ganha pontos por ela.")){ J.fase++; J.fase >= J.lista.length ? encerrar(false) : carregarFase(); } };
 $("encerrar").onclick = () => { if (confirm("Encerrar o jogo e salvar sua pontuação?")) encerrar(false); };
 $("proxima").onclick = proximaFase;
 $("denovo").onclick = () => mostrar("inicio");
