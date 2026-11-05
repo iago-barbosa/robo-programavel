@@ -10,6 +10,7 @@ Abra o `index.html` no navegador. Digite um nome com pelo menos 3 caracteres e c
 - **▶ Executar** anima o robô passo a passo e destaca o bloco que está rodando.
 - Estrelas por fase: ⭐⭐⭐ (300 pts) usando até a meta de blocos, ⭐⭐ (200) até 2 a mais, ⭐ (100) acima disso.
 - **</> Ver código** mostra o programa equivalente em JavaScript.
+- O jogador tem **4 vidas** para o jogo todo. Bater na parede ou terminar o programa longe da bandeira custa uma vida. Com 4 erros, é game over e a pontuação vai para o ranking.
 - São 9 fases. O ranking com os 10 melhores fica salvo no navegador (localStorage).
 
 ## Estrutura

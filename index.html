@@ -24,7 +24,8 @@
       <li>Toque nos blocos (ou arraste) para montar o programa e aperte <b>▶ Executar</b>.</li>
       <li>O <b>🔁 Repetir</b> executa os blocos de dentro várias vezes. Toque no número para mudar.</li>
       <li>Quanto menos blocos você usar, mais estrelas ganha: ⭐⭐⭐ = 300 pontos.</li>
-      <li>São 9 fases. Bateu na parede? Sem problema, é só ajustar e tentar de novo.</li>
+      <li>Você tem <b>4 vidas</b> ❤️❤️❤️❤️. Cada vez que o robô bate na parede ou o programa termina longe da bandeira, perde uma. Sem vidas, é game over.</li>
+      <li>São 9 fases. Parar a execução no botão ■ não custa vida.</li>
     </ul>
   </section>
 
@@ -32,6 +33,7 @@
   <section id="jogo" class="hidden">
     <div class="topo card">
       <div><span class="stat">Fase</span> <b id="faseNum">1</b><span class="stat">/9</span> · <b id="faseNome"></b></div>
+      <div class="vidas" id="vidas" aria-label="vidas"></div>
       <div class="stat">Pontos <b id="pontos">0</b></div>
     </div>
     <p class="dica" id="dica"></p>

@@ -1,5 +1,6 @@
 // Lógica do Robô Programável. As fases ficam em js/fases.js.
 
+const MAX_VIDAS = 4;            // erros permitidos antes do game over
 const MIN_NOME = 3, RANK_KEY = "robo-programavel-ranking", RANK_TAM = 10;
 const VELOCIDADE = 450;           // ms por comando
 const VEZES_MIN = 2, VEZES_MAX = 9;
@@ -55,7 +56,7 @@ function novoJogo(){
   if (!nomeOk()){ validarNome(); $("nome").focus(); return; }
   const nome = $("nome").value.trim();
   try { localStorage.setItem(RANK_KEY + "-nome", nome); } catch {}
-  J = { nome, fase:0, pontos:0, estrelas:0, concluidas:0, programa:[], alvo:null, rodando:false };
+  J = { nome, vidas:MAX_VIDAS, fase:0, pontos:0, estrelas:0, concluidas:0, programa:[], alvo:null, rodando:false };
   mostrar("jogo");
   carregarFase();
 }
@@ -70,9 +71,22 @@ function carregarFase(){
   $("dica").textContent = "💡 " + f.dica;
   $("par").textContent = f.par + " blocos";
   $("pontos").textContent = J.pontos;
+  desenharVidas();
   desenharTabuleiro();
   desenharPrograma();
   mensagem("");
+}
+
+// ---------- Vidas ----------
+function desenharVidas(){
+  $("vidas").innerHTML = Array.from({length:MAX_VIDAS}, (_,i) => `<span class="${i<J.vidas?'':'perdida'}">❤️</span>`).join("");
+}
+function perderVida(){
+  J.vidas--;
+  desenharVidas();
+  $("vidas").classList.remove("tremer"); void $("vidas").offsetWidth; $("vidas").classList.add("tremer");
+  if (J.vidas <= 0) return " Suas vidas acabaram!";
+  return ` Restam ${J.vidas} ${J.vidas > 1 ? "vidas" : "vida"}.`;
 }
 
 // ---------- Tabuleiro ----------
@@ -287,11 +301,12 @@ async function executar(){
   document.querySelectorAll(".item.ativo").forEach(x => x.classList.remove("ativo"));
 
   if (resultado === "venceu"){ $("robo").classList.add("venceu"); mensagem("Chegou! 🎉", "ok"); await espera(700); travar(false); faseConcluida(); return; }
-  if (resultado === "bateu"){ $("robo").classList.add("bateu"); mensagem("O robô bateu na parede! Ajuste o programa e tente de novo.", "bad"); }
-  if (resultado === "fim") mensagem("O programa terminou, mas o robô não chegou na bandeira.", "bad");
+  if (resultado === "bateu"){ $("robo").classList.add("bateu"); mensagem("O robô bateu na parede!" + perderVida(), "bad"); }
+  if (resultado === "fim") mensagem("O programa terminou, mas o robô não chegou na bandeira." + perderVida(), "bad");
   if (resultado === "parou") mensagem("Execução interrompida.");
   travar(false);
   await espera(1200);
+  if (J.vidas <= 0) return encerrar("gameover");
   if (!J.rodando){ robo = inicioRobo(); limparRastro(); posicionarRobo(); }
 }
 
@@ -318,7 +333,7 @@ function encerrar(completou){
   const e = { nome:J.nome, pontos:J.pontos, estrelas:J.estrelas, fases:J.concluidas, data:Date.now() };
   const pos = adicionarRanking(e);
   J.ultima = e.data;
-  $("fimTitulo").textContent = completou ? "🏆 Você completou todas as fases!" : "Fim de jogo";
+  $("fimTitulo").textContent = completou === "gameover" ? "💀 Game over" : completou ? "🏆 Você completou todas as fases!" : "Fim de jogo";
   $("final").textContent = J.pontos + " pts";
   $("fimInfo").textContent = `${J.nome}, você concluiu ${J.concluidas} de ${FASES.length} fases e ganhou ${J.estrelas} ⭐. ` +
     (pos < 0 ? "Não foi dessa vez que entrou no ranking." : `Você ficou em ${pos + 1}º lugar no ranking!`);
